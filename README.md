@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kyoto Trip Planner Chat — happy path
 
-## Getting Started
+Guests quit the search filter panel before they see a listing. This prototype replaces the filters with a chat: send any message and the assistant plans a Kyoto weekend as three cards, always in the order **stay, experience, food**.
 
-First, run the development server:
+This is the happy path only: everything works. Error handling (the error bubble and the `?fail=once` trigger) comes next.
+
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000, type anything (or tap the suggestion) and press Send. A thinking animation plays for about 1.6 seconds, then the three cards appear.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| File | What it does |
+| --- | --- |
+| `src/data/workbook.ts` | Fake data: one row from each sheet of the Kyoto Weekend Content Workbook (Stays S1, Experiences E1, Food F1), typed like the sheet columns |
+| `src/data/mockResponse.ts` | Turns those rows into the mock response (`cardType` + `details`), in the order stay, experience, food |
+| `src/components/Chat.tsx` | The chat page: messages, suggestion chip, composer, thinking state |
+| `src/components/ThinkingBubble.tsx` | The thinking animation (bouncing dots; still for people who turn off motion) |
+| `src/components/cards/*` | The three cards |
 
-## Learn More
+### Why these rows
 
-To learn more about Next.js, take a look at the following resources:
+- **S1, the Gion townhouse:** central to the other two picks.
+- **E1, the tea ceremony:** has open spots and is in Gion. E3 is skipped because it is sold out.
+- **F1, Menya Inoichi:** in Gion, an 8-minute walk from the stay.
+- Together they total **$516 of the $600** reference budget.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### How the cards differ (from the card spec)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| | Stay | Experience | Food |
+| --- | --- | --- | --- |
+| Image | Wide banner, top | Tall strip, left | Round thumbnail, top right |
+| Biggest text | Travel dates | Activity name | Restaurant name |
+| Accent | Coral top border | Purple day label | Amber meal and price label |
 
-## Deploy on Vercel
+All three cards share one width and height, so no card outranks another. Images are grey placeholders because the workbook has no photo URLs: image rights for the prototype are not cleared.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js (App Router), TypeScript, Tailwind CSS. No backend: the mock response lives in the code.
