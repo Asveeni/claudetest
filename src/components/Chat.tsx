@@ -40,10 +40,19 @@ export function Chat() {
   const nextId = useRef(1);
   const endRef = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wasThinking = useRef(false);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, thinking]);
+
+  // When the cards arrive, the box unlocks and the cursor goes back into it,
+  // so the guest can keep typing without clicking.
+  useEffect(() => {
+    if (wasThinking.current && !thinking) inputRef.current?.focus();
+    wasThinking.current = thinking;
+  }, [thinking]);
 
   useEffect(() => () => {
     if (timer.current) clearTimeout(timer.current);
@@ -135,18 +144,38 @@ export function Chat() {
       </main>
 
       <footer className="border-t border-stone-200 bg-white">
-        <form onSubmit={onSubmit} className="mx-auto flex max-w-5xl gap-2 px-4 py-3">
+        <form
+          onSubmit={onSubmit}
+          aria-busy={thinking}
+          className="mx-auto flex max-w-5xl gap-2 px-4 py-3"
+        >
           <label htmlFor="message" className="sr-only">
             Message
           </label>
-          <input
-            id="message"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Ask about your Kyoto weekend…"
-            autoComplete="off"
-            className="flex-1 rounded-full border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-900 focus:outline-none"
-          />
+          <div className="relative flex-1">
+            {thinking && (
+              <svg
+                aria-hidden
+                viewBox="0 0 16 16"
+                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+              >
+                <rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" />
+                <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            )}
+            <input
+              id="message"
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              disabled={thinking}
+              placeholder={thinking ? "Wait a moment, I'm planning your weekend…" : "Ask about your Kyoto weekend…"}
+              autoComplete="off"
+              className={`w-full rounded-full border border-stone-300 bg-white py-2.5 pr-4 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-900 focus:outline-none disabled:cursor-not-allowed disabled:border-stone-200 disabled:bg-stone-100 ${
+                thinking ? "pl-10" : "pl-4"
+              }`}
+            />
+          </div>
           <button
             type="submit"
             disabled={!draft.trim() || thinking}

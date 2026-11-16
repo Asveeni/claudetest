@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000, type anything (or tap the suggestion) and press Send. A thinking animation plays for about 1.6 seconds, then the three cards appear.
+Open http://localhost:3000, type anything (or tap the suggestion) and press Send. The message box locks (greyed, with a lock icon) and three dots pulse in the assistant's reply bubble for about 1.6 seconds. Then the three cards appear, the box unlocks and the cursor returns to it.
 
 ## How it works
 
@@ -20,7 +20,7 @@ Open http://localhost:3000, type anything (or tap the suggestion) and press Send
 | `src/data/workbook.ts` | Fake data: one row from each sheet of the Kyoto Weekend Content Workbook (Stays S1, Experiences E1, Food F1), typed like the sheet columns |
 | `src/data/mockResponse.ts` | Turns those rows into the mock response (`cardType` + `details`), in the order stay, experience, food |
 | `src/components/Chat.tsx` | The chat page: messages, suggestion chip, composer, thinking state |
-| `src/components/ThinkingBubble.tsx` | The thinking animation (bouncing dots; still for people who turn off motion) |
+| `src/components/ThinkingBubble.tsx` | The reply bubble with three pulsing dots (still for people who turn off motion) |
 | `src/components/cards/*` | The three cards |
 
 ### Why these rows
